@@ -1,15 +1,23 @@
 // app/api/bulk-order-email/route.ts
-
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
 
 // Ensure this runs on Node (Resend needs Node runtime)
 export const runtime = "nodejs";
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
+async function getResendClient() {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) {
+    throw new Error("Missing RESEND_API_KEY environment variable");
+  }
+  // lazy import/resend client creation
+  const { Resend } = await import("resend");
+  return new Resend(key);
+}
 
 export async function POST(req: Request) {
   try {
+    const resend = await getResendClient();
+
     const body = await req.json();
     console.log("bulk-order-email body:", body);
 
@@ -26,7 +34,7 @@ export async function POST(req: Request) {
     } = body;
 
     const textLines = [
-      `College / Institute: ${college_name}`,
+      `College / Institute: ${college_name ?? "N/A"}`,
       location && `City & State: ${location}`,
       department && `Department / Course: ${department}`,
       contact_person && `Contact Person: ${contact_person}`,
@@ -39,13 +47,12 @@ export async function POST(req: Request) {
       notes && `Notes: ${notes}`,
     ].filter(Boolean);
 
+    const toEmail = process.env.NOTIFY_EMAIL ?? "snehamversepublications@gmail.com";
+
     const { error } = await resend.emails.send({
       from: "SnehAm VERSE <no-reply@snehamversepublications.com>",
-      // you set this in .env.local; fallback just in case
-      to: process.env.NOTIFY_EMAIL ?? "snehamversepublicications@gmail.com",
-      subject: `New Bulk Order Enquiry – ${
-        college_name || "Unknown College"
-      }`,
+      to: toEmail,
+      subject: `New Bulk Order Enquiry – ${college_name ?? "Unknown College"}`,
       text: textLines.join("\n"),
     });
 
