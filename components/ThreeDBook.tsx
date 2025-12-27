@@ -3,12 +3,12 @@
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 
 function BookMesh() {
   const meshRef = useRef<THREE.Mesh>(null!);
 
-  // Load textures from the public/book folder
+  // Load textures
   const frontTexture = useLoader(
     THREE.TextureLoader,
     "/book/front-cover.png"
@@ -18,35 +18,46 @@ function BookMesh() {
     "/book/back-cover.png"
   );
 
-  // Correct color space
-  frontTexture.colorSpace = THREE.SRGBColorSpace;
-  backTexture.colorSpace = THREE.SRGBColorSpace;
+  // ✅ SAFE: clone & configure textures (no hook mutation)
+  const textures = useMemo(() => {
+    const front = frontTexture.clone();
+    const back = backTexture.clone();
+
+    front.colorSpace = THREE.SRGBColorSpace;
+    back.colorSpace = THREE.SRGBColorSpace;
+
+    front.needsUpdate = true;
+    back.needsUpdate = true;
+
+    return { front, back };
+  }, [frontTexture, backTexture]);
 
   // Animation: rotation + floating
   useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
     if (!meshRef.current) return;
 
+    const t = clock.getElapsedTime();
     meshRef.current.rotation.y = t * 0.4;
     meshRef.current.position.y = Math.sin(t * 1.2) * 0.06;
   });
 
-  const pageColor = new THREE.Color("#f5f5f0");
+  // ✅ Memoize materials (important for performance + stability)
+  const materials = useMemo(() => {
+    const pageColor = new THREE.Color("#f5f5f0");
 
-  const materials = [
-    new THREE.MeshStandardMaterial({ color: pageColor }),     // right
-    new THREE.MeshStandardMaterial({ color: pageColor }),     // left
-    new THREE.MeshStandardMaterial({ color: pageColor }),     // top
-    new THREE.MeshStandardMaterial({ color: pageColor }),     // bottom
-    new THREE.MeshStandardMaterial({ map: frontTexture }),    // front
-    new THREE.MeshStandardMaterial({ map: backTexture }),     // back
-  ];
+    return [
+      new THREE.MeshStandardMaterial({ color: pageColor }), // right
+      new THREE.MeshStandardMaterial({ color: pageColor }), // left
+      new THREE.MeshStandardMaterial({ color: pageColor }), // top
+      new THREE.MeshStandardMaterial({ color: pageColor }), // bottom
+      new THREE.MeshStandardMaterial({ map: textures.front }), // front
+      new THREE.MeshStandardMaterial({ map: textures.back }),  // back
+    ];
+  }, [textures]);
 
   return (
-    // 🔥 Slightly bigger than before (was 0.9)
     <group scale={1.15}>
       <mesh ref={meshRef} castShadow receiveShadow>
-        {/* Slightly increased size (was 0.9, 1.4, 0.08) */}
         <boxGeometry args={[1.0, 1.55, 0.09]} />
 
         <meshStandardMaterial attach="material-0" {...materials[0]} />
@@ -64,7 +75,6 @@ export default function ThreeDBook() {
   return (
     <div className="w-full h-[280px] sm:h-80 md:h-96">
       <Canvas
-        // 🔥 Camera slightly closer (was 4)
         camera={{ position: [0, 0, 3.6], fov: 35 }}
         gl={{ antialias: true }}
         shadows
