@@ -192,7 +192,7 @@ export default function CollegesPage() {
                 <input
                   name="department"
                   className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 outline-none text-slate-50 placeholder:text-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  placeholder="B.Sc, B.Com, Pharmacy, etc."
+                  placeholder="B.Sc, B.Com,Engineering, Pharmacy, etc."
                 />
               </div>
             </div>

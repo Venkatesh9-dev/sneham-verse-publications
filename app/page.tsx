@@ -1,4 +1,6 @@
 import ThreeDBook from "@/components/ThreeDBook";
+import Rating from "@/components/Rating";
+
 
 export default function HomePage() {
   return (
@@ -59,6 +61,8 @@ export default function HomePage() {
 
               {/* 3D rotating / floating book */}
               <ThreeDBook />
+              <Rating />
+
             </div>
           </div>
         </div>

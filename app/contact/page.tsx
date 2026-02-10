@@ -22,7 +22,7 @@ export default function ContactPage() {
           </p>
           <div className="space-y-1">
             <p className="font-semibold text-slate-50">Primary Email</p>
-            <p className="text-blue-300">support@snehamverse.com</p>
+            <p className="text-blue-300">snehamversepublications@gmail.com</p>
           </div>
           <div className="space-y-1">
             <p className="font-semibold text-slate-50">Response Time</p>

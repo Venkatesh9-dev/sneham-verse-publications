@@ -27,14 +27,10 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur">
       <nav className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Brand */}
-        <Link href="/" className="flex flex-col leading-tight">
-          <span className="text-lg font-semibold tracking-wide text-slate-50">
-            SnehAm VERSE PUBLICATIONS
-          </span>
-          <span className="text-xs text-slate-400">
-            Student-friendly AI guidance
-          </span>
-        </Link>
+        <Link href="/" className="text-lg font-semibold tracking-wide text-white">
+  SnehAm
+</Link>
+
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-6">
