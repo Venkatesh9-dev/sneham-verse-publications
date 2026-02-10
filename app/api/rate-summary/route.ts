@@ -1,7 +1,9 @@
-// app/api/rate-summary/route.ts
-
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseServer";
+
+interface RatingRow {
+  rating: number;
+}
 
 export async function GET() {
   try {
@@ -16,14 +18,14 @@ export async function GET() {
       );
     }
 
-    const ratings = data || [];
+    const ratings: RatingRow[] = data || [];
 
     const total = ratings.length;
 
     const average =
       total > 0
         ? ratings.reduce(
-            (acc: number, curr: any) => acc + curr.rating,
+            (acc: number, curr: RatingRow) => acc + curr.rating,
             0
           ) / total
         : 0;
@@ -32,9 +34,16 @@ export async function GET() {
       total,
       average,
     });
-  } catch (err: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      { error: err.message },
+      { error: "Unexpected error" },
       { status: 500 }
     );
   }

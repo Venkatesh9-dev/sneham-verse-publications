@@ -1,11 +1,14 @@
-// app/api/rate/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseServer";
 
+interface RatingRequest {
+  rating: number;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { rating } = await req.json();
+    const body: RatingRequest = await req.json();
+    const { rating } = body;
 
     if (!rating || rating < 1 || rating > 5) {
       return NextResponse.json(
@@ -26,9 +29,16 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      { error: err.message },
+      { error: "Unexpected error" },
       { status: 500 }
     );
   }
