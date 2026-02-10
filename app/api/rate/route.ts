@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseServer } from "@/lib/supabaseServer";
+import { supabase } from "@/lib/supabaseServer";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     const userAgent = req.headers.get("user-agent") || "";
 
     // UPSERT: Update if IP exists, insert if not
-    const { error } = await supabaseServer
+    const { error } = await supabase
       .from("book_ratings")
       .upsert(
         {
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Fetch updated average + total count
-    const { data, error: aggregateError } = await supabaseServer
+    const { data, error: aggregateError } = await supabase
       .from("book_ratings")
       .select("rating");
 
