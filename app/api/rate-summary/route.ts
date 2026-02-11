@@ -12,6 +12,7 @@ export async function GET() {
       .select("rating");
 
     if (error) {
+      console.error("Summary fetch error:", error);
       return NextResponse.json(
         { error: error.message },
         { status: 500 }
@@ -36,12 +37,12 @@ export async function GET() {
       average,
       count,
     });
-  } catch (error) {
-  console.error(error);
-  return NextResponse.json(
-    { error: "Something went wrong" },
-    { status: 500 }
-  );
-}
 
+  } catch (error) {
+    console.error("Unexpected summary error:", error);
+    return NextResponse.json(
+      { error: "Unexpected server error" },
+      { status: 500 }
+    );
+  }
 }

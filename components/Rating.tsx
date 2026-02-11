@@ -7,11 +7,11 @@ export default function Rating() {
   const [count, setCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Format count with commas
   const formatCount = (num: number) => {
     return new Intl.NumberFormat("en-IN").format(num);
   };
 
+  // Initial load
   useEffect(() => {
     const loadRatings = async () => {
       try {
@@ -24,6 +24,8 @@ export default function Rating() {
         if (!data.error) {
           setAverage(Number(data.average) || 0);
           setCount(Number(data.count) || 0);
+        } else {
+          console.error("Summary error:", data.error);
         }
       } catch (error) {
         console.error("Failed to fetch ratings", error);
@@ -33,6 +35,7 @@ export default function Rating() {
     loadRatings();
   }, []);
 
+  // Submit rating
   const submitRating = async (rating: number) => {
     try {
       setLoading(true);
@@ -48,17 +51,11 @@ export default function Rating() {
       const data = await res.json();
 
       if (!data.error) {
-        // Re-fetch updated summary
-        const summaryRes = await fetch("/api/rate-summary", {
-          cache: "no-store",
-        });
-
-        const summaryData = await summaryRes.json();
-
-        if (!summaryData.error) {
-          setAverage(Number(summaryData.average) || 0);
-          setCount(Number(summaryData.count) || 0);
-        }
+        // Directly update from POST response
+        setAverage(Number(data.average) || 0);
+        setCount(Number(data.count) || 0);
+      } else {
+        console.error("Insert error:", data.error);
       }
     } catch (error) {
       console.error("Failed to submit rating", error);
