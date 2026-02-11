@@ -61,7 +61,8 @@ export default function HomePage() {
 
               {/* 3D rotating / floating book */}
               <ThreeDBook />
-              <Rating />
+              {/* <Rating /> */}
+
 
             </div>
           </div>
