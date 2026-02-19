@@ -86,8 +86,7 @@ export default function BookPage() {
               planned)
             </p>
             <p>
-              <span className="text-slate-400">Ideal readers:</span> Every student — from Intermediate to Engineering, Degree, Polytechnic, Pharmacy, Medical, and beyond — who wants to understand AI clearly and use it wisely in academics and future careers.
-              
+              <span className="text-slate-400">Ideal readers:</span> Every student — from secondary school through higher education — who wants to understand AI clearly and use it responsibly in academics and future careers.
             </p>
           </div>
 
